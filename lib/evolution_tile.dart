@@ -2,11 +2,11 @@ import 'package:evolution/models/evolution.dart';
 import 'package:evolution/models/evolution_stage.dart';
 import 'package:evolution/widgets/hoverable_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class EvolutionTile extends StatefulWidget {
   final Evolution evolution;
-  const EvolutionTile({super.key, required this.evolution});
+  final double stageWidth;
+  const EvolutionTile({super.key, required this.evolution, required this.stageWidth});
 
   @override
   State<EvolutionTile> createState() => _EvolutionTileState();
@@ -60,12 +60,9 @@ class _EvolutionTileState extends State<EvolutionTile> {
   }
 
   Widget _allStages() {
-    return StaggeredGrid.count(
-      crossAxisCount: 2,
-      mainAxisSpacing: 2,
-      crossAxisSpacing: 2,
+    return Wrap(
       children: [
-        for (EvolutionStage stage in widget.evolution.stages) Image.asset(stage.fileName),
+        for (EvolutionStage stage in widget.evolution.stages) Image.asset(stage.fileName, width: widget.stageWidth),
       ],
     );
   }

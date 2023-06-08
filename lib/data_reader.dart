@@ -5,10 +5,16 @@ import 'package:evolution/services/accentuation_extension.dart';
 import 'package:evolution/services/capitalization_extension.dart';
 import 'package:flutter/services.dart';
 import 'package:translator/translator.dart';
+import 'dart:convert';
 
 class DataReader {
   static List<Evolution> evolutions = [];
   static List<Evolution>? filter;
+
+  static Future<Map<String, dynamic>> _readParams() async {
+    final String response = await rootBundle.loadString('data/params.json');
+    return await json.decode(response);
+  }
 
   /// Remove accentuation, set to lowercase and translate to portuguese
   static Future<Set<String>> _normalizeInputWithTranslation(Set<String> input, [translate = true]) async {
@@ -56,10 +62,14 @@ class DataReader {
       final data = await rootBundle.loadString('assets/data/evolution_data.csv');
       List<List<dynamic>> rows = const CsvToListConverter().convert(data);
       rows.removeAt(0);
+      //var params = await _readParams();
       for (List<dynamic> row in rows) {
         int id = row[0];
-        List<String> names = row[1].split(' ');
-        Set<String> keywords = row[2].split(' ').toSet();
+        if ([9, 11, 13].contains(id)) {
+          continue;
+        }
+        List<String> names = (row[1] as String).split(',').map((name) => name.trim()).toList();
+        Set<String> keywords = (row[2] as String).split(',').map((keyword) => keyword.trim()).toSet();
         String colorCode = 'FF${row[3]}';
         Color color = Color(int.parse(colorCode, radix: 16));
         List<EvolutionStage> stages = [];
